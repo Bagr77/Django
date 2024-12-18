@@ -31,3 +31,6 @@ def major(request):
 
 def page_not_found(request, exception):
     return HttpResponseNotFound("<h1>Страница не найдена</h1>")
+
+def page_not_found2(request, exception):
+    return HttpResponseNotFound("<h1>Страница не найдена</h1>")
