@@ -1,12 +1,20 @@
 from django.http import HttpResponse, HttpResponseNotFound, Http404
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.template.loader import render_to_string
+
 
 
 # Create your views here.
 
 def index(request):
-    return HttpResponse('<h1>Супер главная страница<h1/>')
+    #t = render_to_string('women/index.html')
+    #return HttpResponse(t)
+    return render(request,'women/index.html')
+    #return HttpResponse('<h1>Супер главная страница !!!!<h1/>')
+
+def about(request):
+    return render(request, 'women/about.html')
 
 def categories(request, cat_id):
     return HttpResponse(f'<h1>Статьи по категориям<h1/><p>cat_id {cat_id}</p>')
