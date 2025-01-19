@@ -1,8 +1,10 @@
 from django.http import HttpResponse, HttpResponseNotFound, Http404
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.template.defaultfilters import slugify
 from django.urls import reverse
 from django.template.loader import render_to_string
+
+from women.models import Women
 
 # Create your views here.u
 
@@ -30,10 +32,12 @@ data_db = [
 
 
 def index(request):
+    posts = Women.objects.filter(is_published=1)
+
     data = {
         "title": 'Мега главная страница?',
         'menu': menu,
-        'posts': data_db,
+        'posts': posts,
         'cat_selected': 0
     }
 
@@ -57,8 +61,17 @@ def login(request):
     return HttpResponse('Авторизация')
 
 
-def show_post(request, post_id):
-    return HttpResponse(f"Отображение статьи с id = {post_id}")
+def show_post(request, post_slug):
+
+    post = get_object_or_404(Women, slug=post_slug)
+
+    data = {
+        'title': post.title,
+        'menu': menu,
+        'post': post,
+        'cat_selected': 1,
+    }
+    return render(request, 'women/post.html', data)
 
 
 def show_category(request, cat_id):
@@ -69,7 +82,7 @@ def show_category(request, cat_id):
         'cat_selected': cat_id
     }
 
-    return render(request, 'women/index.html', context=data)
+    return render(request, 'women/post.html', data)
 
 
 def page_not_found(request, exception):
