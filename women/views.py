@@ -6,6 +6,8 @@ from django.template.loader import render_to_string
 
 from women.models import Women
 
+from sitewomen.sitewomen.women.models import Category
+
 # Create your views here.u
 
 menu = [{'title': "О сайте", 'url_name': 'about'},
@@ -14,11 +16,6 @@ menu = [{'title': "О сайте", 'url_name': 'about'},
         {'title': "Войти", 'url_name': 'login'}
 ]
 
-cats_db = [
-    {'id': 1, 'name': 'Актрисы'},
-    {'id': 2, 'name': 'Певицы'},
-    {'id': 3, 'name': 'Спортсменки'},
-]
 
 data_db = [
     {'id': 1, 'title': 'Анджелина Джоли', 'content': '''<h1>Анджелина Джоли</h1> (англ. Angelina Jolie[7], 
@@ -74,12 +71,14 @@ def show_post(request, post_slug):
     return render(request, 'women/post.html', data)
 
 
-def show_category(request, cat_id):
+def show_category(request, cat_slug):
+    category = get_object_or_404(Category, slug=cat_slug)
+    posts = Women.published.filter(cat_id=category.pk)
     data = {
-        "title": 'Отображение по рубрикам',
+        "title": f'Рубрика: {category.name}',
         'menu': menu,
-        'posts': data_db,
-        'cat_selected': cat_id
+        'posts': posts,
+        'cat_selected': category.pk
     }
 
     return render(request, 'women/post.html', data)
