@@ -1,2 +1,0 @@
-def women():
-    return None
