@@ -1,4 +1,5 @@
 from django.db import models
+from django import forms
 
 
 # Create your models here.
@@ -25,3 +26,14 @@ for m in cars:
     Auto.objects.create(**m)
 
 autos = Auto.objects.all()[:2]
+
+# username: текстовое поле; максимальная длина 100 символов, обязательное;
+# email: поле ввода адреса электронной почты; обязательное;
+# agree: поле типа CheckBox; обязательное;
+# content: поле ввода полноценного многострочного текста; обязательное.
+
+class CommentForm(forms.Form):
+    username = forms.CharField(max_length=100)
+    email = forms.EmailField()
+    agree = forms.BooleanField()
+    content = forms.CharField(widget=forms.Textarea)
