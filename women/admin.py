@@ -3,27 +3,28 @@ from .models import Women, Category
 
 
 class MarriedFilter(admin.SimpleListFilter):
-    title = 'Статус женщин'
+    title = "Статус женщин"
     parameter_name = 'status'
 
     def lookups(self, request, model_admin):
         return [
-            ("married", 'Замужем'),
-            ('single', 'Не замужем')
+            ('married', 'Замужен'),
+            ('single', 'Не замужен'),
         ]
 
     def queryset(self, request, queryset):
         if self.value() == 'married':
             return queryset.filter(husband__isnull=False)
-        if self.value() == 'single':
+        elif self.value() == 'single':
             return queryset.filter(husband__isnull=True)
 
 
 @admin.register(Women)
 class WomenAdmin(admin.ModelAdmin):
     fields = ['title', 'slug', 'content', 'cat', 'husband', 'tags']
+    # exclude = ['tags', 'is_published']
     # readonly_fields = ['slug']
-    prepopulated_fields = {'slug': ('title', )}
+    prepopulated_fields = {"slug": ("title", )}
     # filter_horizontal = ['tags']
     filter_vertical = ['tags']
     list_display = ('title', 'time_create', 'is_published', 'cat', 'brief_info')
