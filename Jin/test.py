@@ -2,6 +2,7 @@ from django.db import models
 from django import forms
 from django.core.exceptions import ValidationError
 from django.core.validators import MinLengthValidator, MaxLengthValidator
+from django.shortcuts import render
 from django.utils.deconstruct import deconstructible
 
 # Create your models here.
@@ -158,3 +159,73 @@ class PersonForm(forms.ModelForm):
             'salary': "Зарплата",
             'job': "Профессия",
         }
+
+
+# Объявите класс формы SubjectForm, связанной с моделью Subject и следующими свойствами:
+#
+# отображаемые поля (с сохранением порядка): title, slug, descr, cat; прописывается во вложенном классе Meta;
+# поля title и slug должны иметь CSS-стили attrs={'class': 'form-input'}; прописывается во вложенном классе Meta;
+# поле descr должно иметь CSS-стили attrs={'cols': 50, 'rows': 5} и быть необязательным; прописывается в форме SubjectForm, как объект класса соответствующего поля;
+# поле cat должно наполняться всеми записями из модели Category; не выбранный пункт должен называться "Выберите категорию"; прописывается в форме SubjectForm, как объект класса соответствующего поля.
+# P.S. На экран ничего выводить не нужно.
+
+class SubjectForm(forms.ModelForm):
+    descr = forms.CharField(required=False, widget=forms.Textarea(attrs={'cols': 50, 'rows': 5}))
+    cat = forms.ModelChoiceField(queryset=Category.objects.all(), empty_label='Выберите категорию')
+
+    class Meta:
+        fields = ['title', 'slug', 'descr', 'cat']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-input'}),
+            'slug': forms.TextInput(attrs={'class': 'form-input'})
+        }
+
+# для метода передачи данных GET представление должно создавать пустую форму CategoryForm и
+# с помощью функции render формируется HTML-документ по шаблону 'subject/addcategory.html'
+# с передачей в него объекта формы CategoryForm через переменную (ключ) form;
+# при получении POST-запроса создать заполненную форму CategoryForm (из принятых данных),
+# проверить корректность заполнения формы стандартным методом формы и для корректных данных выполнить сохранение данных формы в БД
+# (с помощью соответствующего метода формы); после сохранения данных возвратить объект формы.
+
+
+def add_category(request):
+    if request.method == 'POST':
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return form
+    else:
+        form = CategoryForm()
+        return render(request, 'subject/addcategory.html', {'form': form})
+
+
+# Объявите класс формы AddPersonForm, связанной с моделью Person со следующими свойствами, прописанными во вложенном классе Meta:
+#
+# отображаемые поля (с сохранением порядка): full_name, age, job;
+# поля full_name, age и job должны иметь CSS-стили attrs={'class': 'form-input'}.
+# Добавить в класс AddPersonForm метод с именем:
+#
+# clean_<проверяемое поле>
+#
+# для проверки, что введенный возраст age меньше 65. Если проверка не проходит, то генерировать исключение:
+#
+# raise ValidationError("Слишком большой возраст.")
+# Иначе, метод должен возвращать значение age.
+
+class AddPersonForm(forms.ModelForm):
+    class Meta:
+        model = Person
+        fields = ['full_name', 'age', 'job']
+        widgets = {
+            'full_name': forms.TextInput(attrs={'class': 'form-input'}),
+            'age': forms.TextInput(attrs={'class': 'form-input'}),
+            'job': forms.TextInput(attrs={'class': 'form-input'}),
+        }
+
+    def clean_age(self):
+        age = self.cleaned_data['age']
+        if age > 64:
+            raise ValidationError("Слишком большой возраст.")
+
+        return age
+
