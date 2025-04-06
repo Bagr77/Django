@@ -229,3 +229,29 @@ class AddPersonForm(forms.ModelForm):
 
         return age
 
+# Необходимо в файле (разделе) forms.py объявить класс формы UploadImageFile, не связанной с моделью для выбора файлов. Этот класс должен содержать одно поле:
+#
+# upload_image: класс ImageField, обязательное, название "Выберите изображение".
+#
+# Затем, в файле (разделе) views.py объявить функцию представления upload_image_file со следующим функционалом:
+#
+# при GET-запросе должна создаваться пустая форма UploadImageFile и с помощью функции render формироваться HTML-документ по шаблону
+# 'studio/upload_file.html' с передачей в него объекта формы UploadImageFile через переменную (ключ) form;
+# при POST-запросе должна формироваться заполненная форма UploadImageFile, затем, выполняться проверка корректности переданных данных методом is_valid
+# и при успешной проверке сохраняться файл путем вызова метода handle_uploaded_image(form.cleaned_data['upload_image']);
+# функция upload_image_file и для GET и для POST запросов должна с помощью функции render возвращать HTML-документ по шаблону 'studio/upload_file.html'
+# с передачей в него сформированного объекта формы UploadImageFile через переменную (ключ) form.
+
+class UploadImageFile(forms.Form):
+    upload_image = forms.ImageField(labels='Выберите изображение')
+
+def upload_image_file(request):
+    if request.method == 'POST':
+        form = UploadImageFile(request.POST, request.FILES)
+        if form.is_valid():
+            handle_uploaded_file(form.cleaned_data['upload_image'])
+            return render(request, 'studio/upload_file.html', {'form': form})
+    else:
+        form = UploadImageFile()
+        return render(request, 'studio/upload_file.html', {'form': form})
+
