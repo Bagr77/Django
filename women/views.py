@@ -3,7 +3,6 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
-import uuid
 
 from .forms import AddPostForm, UploadFileForm
 from .models import Women, Category, TagPost, UploadFiles
@@ -28,8 +27,7 @@ def index(request):
 
 
 # def handle_uploaded_file(f):
-#     unique_filename = uuid.uuid4()
-#     with open(f"sitewomen/uploads/{f.name}_{unique_filename}", "wb+") as destination:
+#     with open(f"uploads/{f.name}", "wb+") as destination:
 #         for chunk in f.chunks():
 #             destination.write(chunk)
 
