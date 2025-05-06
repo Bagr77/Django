@@ -3,7 +3,6 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .forms import LoginUserForm
 
 
 def login_user(request):
@@ -20,7 +19,6 @@ def login_user(request):
         form = LoginUserForm()
 
     return render(request, 'users/login.html', {'form': form})
-
 
 def logout_user(request):
     logout(request)

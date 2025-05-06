@@ -1,9 +1,12 @@
+from django.contrib import admin
 from django.db import models
 from django import forms
 from django.core.exceptions import ValidationError
 from django.core.validators import MinLengthValidator, MaxLengthValidator
 from django.shortcuts import render
 from django.utils.deconstruct import deconstructible
+from django.utils.safestring import mark_safe
+
 
 # Create your models here.
 
@@ -255,3 +258,31 @@ def upload_image_file(request):
         form = UploadImageFile()
         return render(request, 'studio/upload_file.html', {'form': form})
 
+# Необходимо зарегистрировать для админ-панели модель Post и во вспомогательном классе PostAdmin (унаследованный от admin.ModelAdmin) определить:
+#
+# отображаемые поля: title, slug, is_published;
+# кликабельные поля: title;
+# поля при редактировании записи: title, slug, content, photo, is_published;
+# показать верхнюю панель редактирования записи.
+# Затем, добавить пользовательское вычисляемое поле путем объявления в классе PostAdmin метода:
+
+# def post_photo(self, post: Post): ...
+# который должен возвращать HTML-строку с тегом img в следующем формате:
+#
+# "<img src='<URL-адрес изображения photo>' width=50>"
+#
+# (Не забудьте использовать функцию mark_safe для отмены экранирования HTML-тегов.)
+# Добавьте это новое поле для отображения в админ-панели. Декорируйте метод post_photo,
+# чтобы в админ-панели это поле имело название "Изображение".
+
+
+@admin.register(Post)
+class PostAdmin(admin.ModelAdmin):
+    fields = ['title', 'slug', 'is_published', ]
+    list_display_links = ('title',)
+    list_display = ('title', 'slug', 'content', 'is_published', 'post_photo',)
+    save_on_top = True
+
+    @admin.display(description="Изображение")
+    def post_photo(self, post: Post):
+        return mark_safe("<img src='<URL-адрес изображения photo>' width=50>")
