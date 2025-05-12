@@ -3,7 +3,7 @@
 {% block content %}
 <h1>{{title}}</h1>
 {% for item in page_obj %}
-    <p>{{ item.pk }}: {{ item }}</p>
+<p>{{ item.pk }}: {{ item.title }}</p>
 {% endfor %}
 
 <nav>
