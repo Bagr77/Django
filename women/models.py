@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.core.validators import MinLengthValidator, MaxLengthValidator
 from django.db import models
 from django.template.defaultfilters import slugify
@@ -25,7 +26,7 @@ class Women(models.Model):
         PUBLISHED = 1, 'Опубликовано'
 
     title = models.CharField(max_length=255, verbose_name="Заголовок")
-    slug = models.SlugField(max_length=255, unique=True, db_index=True, verbose_name="Slug",                           validators=[
+    slug = models.SlugField(max_length=255, unique=True, db_index=True, verbose_name="Slug", validators=[
                                MinLengthValidator(5, message="Минимум 5 символов"),
                                MaxLengthValidator(100, message="Максимум 100 символов"),
                            ])
@@ -40,6 +41,7 @@ class Women(models.Model):
     tags = models.ManyToManyField('TagPost', blank=True, related_name='tags', verbose_name="Теги")
     husband = models.OneToOneField('Husband', on_delete=models.SET_NULL,
                                    null=True, blank=True, related_name='wuman', verbose_name="Муж")
+    author = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, related_name='posts', null=True, default=None)
 
     objects = models.Manager()
     published = PublishedManager()
