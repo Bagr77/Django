@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import LogoutView
+from django.core.exceptions import ValidationError
 
 
 class LoginUserForm(AuthenticationForm):
